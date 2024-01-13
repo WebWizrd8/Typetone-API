@@ -1,16 +1,16 @@
 from fastapi import APIRouter, HTTPException
-from schemas.urlcode import (
+from app.schemas.urlcode import (
     CreateCodeRequest,
     CreateCodeResponse,
     GetUrlforCodeResponse,
     GetUrlStatusResponse
 )
-from services import (
+from app.services import (
     create_code_for_url,
     get_url_for_code,
     get_url_status_for_code
 )
-from utils.random_code import create_random_code
+from app.utils.random_code import create_random_code
 
 router = APIRouter()
 

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from routers import router
-from database.database import typetonedb
+from app.routers import router
+from app.database.database import typetonedb
 
 def create_app() -> FastAPI:
     _app = FastAPI()

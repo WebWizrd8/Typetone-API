@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
 from databases import Database
-from database.config import settings
-from models.urlcode import metadata
+from app.database.config import settings
+from app.models.urlcode import metadata
 
 DATABASE_URL = settings.DATABASE_URL
 

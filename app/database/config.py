@@ -5,7 +5,7 @@ class Config(BaseSettings):
     
     class Config:
         env_prefix = ""
-        env_file = "../.env"
+        env_file = ".env"
         env_file_encoding = "utf-8"
 
 settings = Config()

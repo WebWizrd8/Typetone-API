@@ -1,6 +1,6 @@
 from sqlalchemy import insert, select
-from database.database import typetonedb
-from models.urlcode import urlcodetable
+from app.database.database import typetonedb
+from app.models.urlcode import urlcodetable
 from datetime import datetime
 import re
 
