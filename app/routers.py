@@ -1,46 +1,53 @@
-from fastapi import APIRouter, HTTPException
-from schemas.urlcode import (
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+from app.schemas.urlcode import (
     CreateCodeRequest,
     CreateCodeResponse,
     GetUrlforCodeResponse,
     GetUrlStatusResponse
 )
-from services import (
+from app.services import (
     create_code_for_url,
-    get_url_for_code,
-    get_url_status_for_code
+    get_for_code
 )
-from utils.random_code import create_random_code
+from app.utils.shortcode import create_random_code
+from app.database.database import SessionLocal, engine
+from app.models.urlcode import Base
 
 router = APIRouter()
 
-@router.get(path = "/")
-def helloworld():
-    return {"message": "Hello, world!"}
+Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 @router.post(
     path = "/shorten",
     status_code = 201,
     response_model=CreateCodeResponse
 )
-async def create_shorten_code(payload: CreateCodeRequest) -> CreateCodeResponse:
+def create_shorten_code(payload: CreateCodeRequest, db: Session = Depends(get_db)) -> CreateCodeResponse:
     urlcode = payload.shortcode if payload.shortcode != None else create_random_code(6)
-    result = await create_code_for_url(urllink = payload.url, code = urlcode)
+    result = create_code_for_url(database = db, urllink = payload.url, code = urlcode)
 
     if result == 409:
         raise HTTPException(status_code = 409, detail = "Shortcode already in use.")
     elif result == 412:
         raise HTTPException(status_code = 412, detail = "The provided shortcode is invalid.")
 
-    return CreateCodeResponse (shortcode = urlcode)
+    return CreateCodeResponse (shortcode = result.shortcode)
 
 @router.get(
     path = "/{shortcode}",
     status_code = 302,
     response_model = GetUrlforCodeResponse
 )
-async def get_url(shortcode: str) -> GetUrlforCodeResponse:
-    result = await get_url_for_code(code = shortcode)
+def get_url(shortcode: str, db: Session = Depends(get_db)) -> GetUrlforCodeResponse:
+    result = get_for_code(database = db, code = shortcode)
 
     if result == None:
         raise HTTPException(status_code = 404, detail = "Shortcode not found.")
@@ -52,8 +59,8 @@ async def get_url(shortcode: str) -> GetUrlforCodeResponse:
     status_code = 200,
     response_model = GetUrlStatusResponse
 )
-async def get_url_status(shortcode: str) -> GetUrlStatusResponse:
-    result = await get_url_status_for_code(code = shortcode)
+def get_url_status(shortcode: str, db: Session = Depends(get_db)) -> GetUrlStatusResponse:
+    result = get_for_code(database = db, code = shortcode)
     if result == None:
         raise HTTPException(status_code = 404, detail = "Shortcode not found")
     return GetUrlStatusResponse (created = result.created, lastRedirect = result.lastRedirect, redirectCount = result.redirectCount)

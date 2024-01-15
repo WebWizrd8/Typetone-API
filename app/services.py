@@ -1,35 +1,34 @@
-from sqlalchemy import insert, select
-from database.database import typetonedb
-from models.urlcode import urlcodetable
+from sqlalchemy import select
+from app.models.urlcode import UrlCode
+from app.utils.shortcode import validate_code
+from app.utils.shortcode import create_random_code
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 from datetime import datetime
-import re
 
-async def create_code_for_url(urllink: str, code: str):
-    if len(code) != 6 or not re.fullmatch(r'[A-Za-z0-9_]*$', code):
+def create_code_for_url(database: Session, urllink: str, code: str):
+    if validate_code(code) == False:
         return 412
+    
+    query = select(UrlCode.id).where(UrlCode.shortcode == code)
+    existCode = database.execute(query).scalars().all()
+    if len(existCode) > 0:
+        return 409
 
-    query = urlcodetable.insert().values(
-        url = urllink,
-        shortcode = code,
-        created = datetime.utcnow(),
-        lastRedirect = None,
-        redirectCount = 0
-    )
+    new_urlcode = UrlCode(
+       url = urllink,
+       shortcode = code,
+       created = datetime.utcnow(),
+       lastRedirect = None,
+       redirectCount = 0
+   )
+    
+    database.add(new_urlcode)
+    database.commit()
+    database.refresh(new_urlcode)
 
-    try:
-        result = await typetonedb.execute(query)
-        if result is not None:
-            return 302
-    except Exception as e:
-        if str(e).endswith("exists."):
-            return 409
+    return new_urlcode
 
-async def get_url_for_code(code: str):
-    query = select(urlcodetable.c.url).where(urlcodetable.c.shortcode == code)
-    return await typetonedb.fetch_one(query)
-
-async def get_url_status_for_code(code: str):
-    query = select([urlcodetable.c.created, urlcodetable.c.lastRedirect, urlcodetable.c.redirectCount]).where(urlcodetable.c.shortcode == code)
-
-    result = await typetonedb.fetch_one(query)
+def get_for_code(database: Session, code: str):
+    result = database.query(UrlCode).filter(UrlCode.shortcode == code).first()
     return result
