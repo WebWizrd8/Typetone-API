@@ -29,6 +29,13 @@ def create_code_for_url(database: Session, urllink: str, code: str):
 
     return new_urlcode
 
-def get_for_code(database: Session, code: str):
+def get_url_for_code(database: Session, code: str):
+    urlcode = database.query(UrlCode).filter(UrlCode.shortcode == code).first()
+    urlcode.redirectCount += 1
+    urlcode.lastRedirect = datetime.utcnow()
+    database.commit()
+    return urlcode
+
+def get_stats_for_code(database: Session, code: str):
     result = database.query(UrlCode).filter(UrlCode.shortcode == code).first()
     return result

@@ -3,7 +3,7 @@ from typing import Optional
 from datetime import datetime
 
 class CreateCodeRequest(BaseModel):
-    url: str
+    url: Optional[str]
     shortcode: Optional[str]
 
 class CreateCodeResponse(BaseModel):
