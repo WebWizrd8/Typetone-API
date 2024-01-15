@@ -43,6 +43,7 @@ def create_shorten_code(payload: CreateCodeRequest, db: Session = Depends(get_db
 
 @router.get(
     path = "/{shortcode}",
+    status_code = 302,
     response_model = GetUrlforCodeResponse
 )
 def get_url(shortcode: str, db: Session = Depends(get_db)) -> GetUrlforCodeResponse:
