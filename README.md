@@ -19,9 +19,14 @@ $ python3 --version
 ## Setup a virtual environment
 Virtualenv is a tool to set up your Python environments.
 
-You can install venv to your host Python by running this command in your terminal:
+Install venv to your host Python by running this command in your terminal:
 ```bash
 $ pip3 install virtualenv
+```
+
+You can install python-pip3 with command:
+```bash
+$ sudo apt-get install python3-pip
 ```
 
 Move to the project folder in your terminal, and run the following command to create virtual environment for project:
@@ -36,6 +41,11 @@ $ source ./<virtual-environment-name>/bin/activate
 ## Getting started
 
 ### Setup requirements for project
+First ensure that you have the necessary dependencies installed.
+```bash
+$ sudo apt-get install libpq-dev python3-dev
+```
+
 Install required packages.
 ```bash
 $ pip3 install -r requirements. txt

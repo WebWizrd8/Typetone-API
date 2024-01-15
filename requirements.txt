@@ -8,3 +8,7 @@ python-jose[cryptography]
 python-multipart
 python-dotenv
 asyncpg
+sqlalchemy_utils
+pydantic_settings
+psycopg2-binary
+psycopg2

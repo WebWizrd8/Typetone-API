@@ -8,7 +8,8 @@ from app.schemas.urlcode import (
 )
 from app.services import (
     create_code_for_url,
-    get_for_code
+    get_url_for_code,
+    get_stats_for_code
 )
 from app.utils.shortcode import create_random_code
 from app.database.database import SessionLocal, engine
@@ -31,6 +32,9 @@ def get_db():
     response_model=CreateCodeResponse
 )
 def create_shorten_code(payload: CreateCodeRequest, db: Session = Depends(get_db)) -> CreateCodeResponse:
+    if payload.url is None:
+        raise HTTPException(status_code = 400, detail = "Url not present.")
+
     urlcode = payload.shortcode if payload.shortcode != None else create_random_code(6)
     result = create_code_for_url(database = db, urllink = payload.url, code = urlcode)
 
@@ -47,7 +51,7 @@ def create_shorten_code(payload: CreateCodeRequest, db: Session = Depends(get_db
     response_model = GetUrlforCodeResponse
 )
 def get_url(shortcode: str, db: Session = Depends(get_db)) -> GetUrlforCodeResponse:
-    result = get_for_code(database = db, code = shortcode)
+    result = get_url_for_code(database = db, code = shortcode)
 
     if result == None:
         raise HTTPException(status_code = 404, detail = "Shortcode not found.")
@@ -60,7 +64,7 @@ def get_url(shortcode: str, db: Session = Depends(get_db)) -> GetUrlforCodeRespo
     response_model = GetUrlStatusResponse
 )
 def get_url_status(shortcode: str, db: Session = Depends(get_db)) -> GetUrlStatusResponse:
-    result = get_for_code(database = db, code = shortcode)
+    result = get_stats_for_code(database = db, code = shortcode)
     if result == None:
         raise HTTPException(status_code = 404, detail = "Shortcode not found")
     return GetUrlStatusResponse (created = result.created, lastRedirect = result.lastRedirect, redirectCount = result.redirectCount)
