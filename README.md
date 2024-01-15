@@ -48,7 +48,7 @@ $ sudo apt-get install libpq-dev python3-dev
 
 Install required packages.
 ```bash
-$ pip3 install -r requirements. txt
+$ pip3 install -r requirements.txt
 ```
 
 ### Running the code
