@@ -1,14 +1,12 @@
-from sqlalchemy import Table, Column, Integer, String, DateTime, MetaData
+from sqlalchemy import Column, Integer, String, DateTime
+from app.database.database import Base
 
-metadata = MetaData()
+class UrlCode(Base):
+    __tablename__ = "UrlCode"
 
-urlcodetable = Table (
-    "UrlCode",
-    metadata,
-    Column("id", Integer, primary_key=True, index=True, autoincrement=True),
-    Column("url", String(), nullable = False),
-    Column("shortcode", String(6), nullable = False, unique = True),
-    Column("created", DateTime),
-    Column("lastRedirect", DateTime),
-    Column("redirectCount", Integer),
-)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    url = Column(String(), nullable = False)
+    shortcode = Column(String(6), nullable = False, unique = True)
+    created = Column(DateTime)
+    lastRedirect = Column(DateTime)
+    redirectCount = Column(Integer)
