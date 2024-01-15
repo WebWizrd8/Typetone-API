@@ -10,7 +10,7 @@ from app.services import (
     get_url_for_code,
     get_url_status_for_code
 )
-from app.utils.random_code import create_random_code
+from app.utils.shortcode import create_random_code
 
 router = APIRouter()
 
@@ -36,7 +36,6 @@ async def create_shorten_code(payload: CreateCodeRequest) -> CreateCodeResponse:
 
 @router.get(
     path = "/{shortcode}",
-    status_code = 302,
     response_model = GetUrlforCodeResponse
 )
 async def get_url(shortcode: str) -> GetUrlforCodeResponse:

@@ -1,11 +1,11 @@
 from sqlalchemy import insert, select
 from app.database.database import typetonedb
 from app.models.urlcode import urlcodetable
+from app.utils.shortcode import validate_code
 from datetime import datetime
-import re
 
 async def create_code_for_url(urllink: str, code: str):
-    if len(code) != 6 or not re.fullmatch(r'[A-Za-z0-9_]*$', code):
+    if validate_code(code) == False:
         return 412
 
     query = urlcodetable.insert().values(
@@ -19,8 +19,9 @@ async def create_code_for_url(urllink: str, code: str):
     try:
         result = await typetonedb.execute(query)
         if result is not None:
-            return 302
+            return 201
     except Exception as e:
+        print("ERROR message", e)
         if str(e).endswith("exists."):
             return 409
 
