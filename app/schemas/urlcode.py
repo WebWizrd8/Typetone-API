@@ -10,7 +10,6 @@ class CreateCodeResponse(BaseModel):
     shortcode: str
 
 class GetUrlforCodeResponse(BaseModel):
-    status_code:int = 300
     url: str
 
 class GetUrlStatusResponse(BaseModel):
